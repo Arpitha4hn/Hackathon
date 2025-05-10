@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Country & Language Selection</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #eef;
+      padding: 50px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+    h2 {
+      text-align: center;
+    }
+    label, select, button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #0056b3;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🌍 Select Country & Language</h2>
+    
+    <label for="country">Select Country:</label>
+    <select id="country" required>
+      <option value="">-- Choose Country --</option>
+      <option>India</option>
+      <option>Bangladesh</option>
+      <option>Bhutan</option>
+      <option>Nepal</option>
+      <option>Sri Lanka</option>
+      <option>Pakistan</option>
+      <option>Maldives</option>
+      <option>Afghanistan</option>
+      <option>Myanmar</option>
+      <option>Thailand</option>
+    </select>
+
+    <label for="language">Select Language:</label>
+    <select id="language" required>
+      <option value="">-- Choose Language --</option>
+      <option>English</option>
+      <option>Hindi</option>
+      <option>Tamil</option>
+      <option>Telugu</option>
+      <option>Bengali</option>
+      <option>Marathi</option>
+      <option>Gujarati</option>
+      <option>Kannada</option>
+      <option>Malayalam</option>
+      <option>Punjabi</option>
+    </select>
+
+    <button onclick="proceed()">Continue</button>
+  </div>
+
+  <script>
+    function proceed() {
+      const country = document.getElementById("country").value;
+      const language = document.getElementById("language").value;
+
+      if (!country || !language) {
+        alert("Please select both country and language.");
+        return;
+      }
+
+      // Store selections for later pages
+      localStorage.setItem("selectedCountry", country);
+      localStorage.setItem("selectedLanguage", language);
+
+      // Redirect to sign-in page
+      window.location.href = "signin.html";
+    }
+  </script>
+   <script>
+    document.getElementById('selectForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const country = document.getElementById('country').value;
+      const language = document.getElementById('language').value;
+      if (country !== "India") {
+        alert("Sorry, this service is only available for India.");
+      } else {
+        localStorage.setItem("lang", language);
+        window.location.href = "register.html";
+      }
+    });
+  </script>
+</body>
+</html>
+

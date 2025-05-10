@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Track Application Status</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f9ff;
+      padding: 40px;
+      text-align: center;
+    }
+    input {
+      padding: 12px;
+      width: 300px;
+      font-size: 16px;
+      margin: 10px;
+    }
+    button {
+      padding: 12px 20px;
+      font-size: 18px;
+      margin-top: 10px;
+      cursor: pointer;
+      background-color: #0069d9;
+      color: white;
+      border: none;
+      border-radius: 6px;
+    }
+    button:hover {
+      background-color: #004db3;
+    }
+    #result {
+      margin-top: 30px;
+      font-size: 18px;
+      color: #222;
+    }
+  </style>
+</head>
+<body>
+  <h2>📦 Track Your Application Status</h2>
+
+  <input type="text" id="appId" placeholder="Enter your Application ID" />
+  <br>
+  <button onclick="track()">Track Status</button>
+  <button onclick="listen()">🎤 Speak Application ID</button>
+
+  <div id="result"></div>
+
+  <script>
+    function speak(text) {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "en-IN";
+      window.speechSynthesis.speak(utter);
+    }
+
+    function listen() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-IN';
+      recognition.onresult = (event) => {
+        const id = event.results[0][0].transcript.replace(/\s/g, '').toUpperCase();
+        document.getElementById("appId").value = id;
+        speak("Got it. Tracking your application now.");
+        setTimeout(track, 1500);
+      };
+      recognition.start();
+    }
+
+    function track() {
+      const appId = document.getElementById("appId").value.trim();
+      const data = localStorage.getItem("application_" + appId);
+      const resultDiv = document.getElementById("result");
+
+      if (!data) {
+        resultDiv.innerHTML = `<p style="color:red;">❌ Application ID not found.</p>`;
+        speak("Sorry, no application found with that ID.");
+        return;
+      }
+
+      const app = JSON.parse(data);
+      let message = `Status for ${appId} is: ${app.status}`;
+      if (app.status.toLowerCase() === "rejected") {
+        message += ". Reason: Incomplete documents.";
+        speak(message + ". A message will be sent to your phone.");
+        // Simulate SMS sending
+        console.log("📩 SMS to user: Your application was rejected due to incomplete documents.");
+      } else {
+        speak(message);
+      }
+
+      resultDiv.innerHTML = `<p>📄 <strong>${app.department.toUpperCase()}</strong> Complaint</p>
+                             <p>Status: <strong>${app.status}</strong></p>
+                             ${app.status.toLowerCase() === "rejected" ? "<p>❗ Reason: Incomplete documents</p>" : ""}`;
+    }
+
+    window.onload = () => {
+      speak("Please enter or say your application ID to track your complaint.");
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Check Welfare Scheme Eligibility</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eefaf0;
+      padding: 40px;
+      text-align: center;
+    }
+    input, select {
+      width: 60%;
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 12px 25px;
+      font-size: 18px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .scheme {
+      background-color: #fff;
+      margin: 20px auto;
+      padding: 20px;
+      width: 80%;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h2>🎯 Check Your Scheme Eligibility</h2>
+
+  <input type="text" id="name" placeholder="Enter your full name" /><br />
+  <input type="number" id="age" placeholder="Enter your age" /><br />
+  <input type="number" id="income" placeholder="Enter annual income (INR)" /><br />
+  <select id="category">
+    <option value="">Select Category</option>
+    <option value="General">General</option>
+    <option value="OBC">OBC</option>
+    <option value="SC">SC</option>
+    <option value="ST">ST</option>
+    <option value="Disabled">Disabled</option>
+    <option value="Senior">Senior Citizen</option>
+  </select><br />
+  
+  <button onclick="checkEligibility()">Check Schemes</button>
+
+  <div id="results"></div>
+
+  <script>
+    const schemes = [
+      {
+        name: "Balika Samriddhi Yojana",
+        minAge: 0,
+        maxAge: 18,
+        category: ["SC", "ST", "OBC"],
+        incomeLimit: 300000,
+        docs: ["Birth certificate", "Aadhaar", "Income proof"]
+      },
+      {
+        name: "Post-Matric Scholarship for OBC",
+        minAge: 15,
+        maxAge: 25,
+        category: ["OBC"],
+        incomeLimit: 200000,
+        docs: ["Aadhaar", "Caste certificate", "Marksheet"]
+      },
+      {
+        name: "Scheme for Senior Citizens",
+        minAge: 60,
+        category: ["Senior"],
+        incomeLimit: 500000,
+        docs: ["Aadhaar", "Age proof", "Income certificate"]
+      },
+      {
+        name: "Differently Abled Welfare",
+        category: ["Disabled"],
+        incomeLimit: 600000,
+        docs: ["Disability certificate", "Aadhaar"]
+      },
+      {
+        name: "Smart Cities Mission",
+        category: ["General", "SC", "ST", "OBC"],
+        incomeLimit: 1000000,
+        docs: ["ID proof", "Address proof"]
+      }
+    ];
+
+    function speak(text) {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "en-IN";
+      window.speechSynthesis.speak(utter);
+    }
+
+    function checkEligibility() {
+      const age = parseInt(document.getElementById("age").value);
+      const income = parseInt(document.getElementById("income").value);
+      const category = document.getElementById("category").value;
+      const name = document.getElementById("name").value;
+
+      if (!age || !income || !category || !name) {
+        alert("Please fill in all the fields.");
+        return;
+      }
+
+      const matched = schemes.filter(scheme => {
+        const ageOK = !scheme.minAge || (age >= scheme.minAge && (!scheme.maxAge || age <= scheme.maxAge));
+        const categoryOK = scheme.category.includes(category);
+        const incomeOK = income <= scheme.incomeLimit;
+        return ageOK && categoryOK && incomeOK;
+      });
+
+      const resultDiv = document.getElementById("results");
+      resultDiv.innerHTML = "";
+
+      if (matched.length === 0) {
+        resultDiv.innerHTML = "<p>No matching schemes found.</p>";
+        speak("Sorry, you are not eligible for any scheme right now.");
+        return;
+      }
+
+      speak(`You are eligible for ${matched.length} scheme${matched.length > 1 ? "s" : ""}.`);
+
+      matched.forEach(scheme => {
+        const el = document.createElement("div");
+        el.className = "scheme";
+        el.innerHTML = `
+          <h3>${scheme.name}</h3>
+          <p><strong>Required Documents:</strong> ${scheme.docs.join(", ")}</p>
+        `;
+        resultDiv.appendChild(el);
+      });
+    }
+
+    window.onload = () => {
+      speak("Please enter your age, category, and income to check for eligible schemes.");
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>File a Complaint</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff9f0;
+      padding: 50px;
+      text-align: center;
+    }
+    h2 {
+      font-size: 26px;
+    }
+    select, textarea {
+      width: 80%;
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px 0;
+    }
+    button {
+      padding: 12px 25px;
+      font-size: 18px;
+      margin-top: 20px;
+      cursor: pointer;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    #status {
+      margin-top: 20px;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <h2>📝 File a Complaint</h2>
+
+  <label for="department">Select Department:</label><br>
+  <select id="department">
+    <option value="agriculture">Agriculture</option>
+    <option value="education">Education</option>
+    <option value="pension">Pension</option>
+    <option value="tax">Tax Department</option>
+    <option value="others">Others</option>
+  </select><br>
+
+  <label for="complaintText">Speak or Type Your Complaint:</label><br>
+  <textarea id="complaintText" rows="5" placeholder="Describe your issue..."></textarea><br>
+
+  <button onclick="submitComplaint()">Submit Complaint</button>
+  <div id="status"></div>
+
+  <script>
+    function speak(text) {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'en-IN';
+      window.speechSynthesis.speak(utter);
+    }
+
+    function startListening() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-IN';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onresult = (event) => {
+        const speech = event.results[0][0].transcript;
+        document.getElementById("complaintText").value = speech;
+        speak("Complaint noted. Click submit to proceed.");
+      };
+
+      recognition.onerror = () => {
+        speak("Sorry, I couldn't hear you. Please try typing your complaint.");
+      };
+
+      recognition.start();
+    }
+
+    function generateAppId() {
+      return "APP" + Math.floor(Date.now() / 1000);
+    }
+
+    function submitComplaint() {
+      const department = document.getElementById("department").value;
+      const complaint = document.getElementById("complaintText").value.trim();
+      const appId = generateAppId();
+
+      if (!complaint) {
+        alert("Please provide your complaint.");
+        return;
+      }
+
+      // Save in localStorage (simulate backend)
+      const data = { department, complaint, appId, status: "Sent" };
+      localStorage.setItem("application_" + appId, JSON.stringify(data));
+
+      document.getElementById("status").innerHTML = `✅ Complaint submitted. <br>📄 Your Application ID: <strong>${appId}</strong>`;
+      speak("Your complaint has been submitted successfully. Your application ID is " + appId);
+    }
+
+    // Speak on load
+    window.onload = () => {
+      speak("Please select a department and tell me your complaint.");
+      setTimeout(startListening, 3000);
+    };
+  </script>
+</body>
+</html>

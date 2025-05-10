@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Sign In / Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #eef;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      font-size: 16px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      width: 48%;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .btn-group {
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🆔 Aadhaar Sign In / Login</h2>
+
+    <label for="aadhar">Upload Aadhaar QR/Image (Simulated):</label>
+    <input type="file" id="aadhar" onchange="simulateScan()" />
+
+    <label>Full Name:</label>
+    <input type="text" id="name" placeholder="Full Name" readonly />
+
+    <label>Date of Birth:</label>
+    <input type="date" id="dob" readonly />
+
+    <label>Gender:</label>
+    <input type="text" id="gender" readonly />
+
+    <label>Address:</label>
+    <input type="text" id="address" readonly />
+
+    <label>Aadhaar Number:</label>
+    <input type="text" id="aadhaarNumber" readonly />
+
+    <label>Set Password:</label>
+    <input type="password" id="password" />
+
+    <label>User ID (Auto-generated):</label>
+    <input type="text" id="userId" readonly />
+
+    <div class="btn-group">
+      <button onclick="register()">Sign In</button>
+      <button onclick="login()">Login</button>
+    </div>
+  </div>
+
+  <script>
+    function simulateScan() {
+      // Simulated Aadhaar data (in real system, use QR decoder)
+      document.getElementById("name").value = "Ravi Kumar";
+      document.getElementById("dob").value = "1992-05-15";
+      document.getElementById("gender").value = "Male";
+      document.getElementById("address").value = "123 MG Road, Delhi";
+      document.getElementById("aadhaarNumber").value = "1234-5678-9012";
+
+      // Auto-generate User ID
+      const userId = "USR" + Date.now();
+      document.getElementById("userId").value = userId;
+    }
+
+    function register() {
+      const user = {
+        name: document.getElementById("name").value,
+        dob: document.getElementById("dob").value,
+        gender: document.getElementById("gender").value,
+        address: document.getElementById("address").value,
+        aadhaar: document.getElementById("aadhaarNumber").value,
+        password: document.getElementById("password").value,
+        userId: document.getElementById("userId").value
+      };
+
+      if (!user.name || !user.password || !user.userId) {
+        alert("Scan Aadhaar and set a password.");
+        return;
+      }
+
+      // Store user data
+      localStorage.setItem("user", JSON.stringify(user));
+      alert("Registration successful! You can now log in.");
+    }
+
+    function login() {
+      const enteredId = document.getElementById("userId").value;
+      const enteredPwd = document.getElementById("password").value;
+      const stored = JSON.parse(localStorage.getItem("user"));
+
+      if (!stored || stored.userId !== enteredId || stored.password !== enteredPwd) {
+        alert("Invalid User ID or Password.");
+        return;
+      }
+
+      alert("Login successful!");
+      window.location.href = "assistant.html";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Assistant</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4ff;
+      padding: 50px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 12px 25px;
+      margin: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #voiceStatus {
+      margin-top: 20px;
+      font-style: italic;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 AI Copilot for Public Welfare</h1>
+  <p>Hi! I’m your AI Assistant. What would you like to do today?</p>
+
+  <button onclick="handleOption('complaint')">1️⃣ File a Complaint</button>
+  <button onclick="handleOption('scheme')">2️⃣ Check for Schemes</button>
+  <button onclick="handleOption('track')">3️⃣ Track Application</button>
+
+  <p><em>You can also say your choice aloud...</em></p>
+  <div id="voiceStatus">🎤 Listening...</div>
+
+  <script>
+    function speak(text) {
+      const synth = window.speechSynthesis;
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "en-IN";
+      synth.speak(utter);
+    }
+
+    function handleOption(choice) {
+      switch (choice) {
+        case 'complaint':
+          window.location.href = "complaint.html";
+          break;
+        case 'scheme':
+          window.location.href = "scheme-check.html";
+          break;
+        case 'track':
+          window.location.href = "track-status.html";
+          break;
+      }
+    }
+
+    function startListening() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-IN';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onresult = (event) => {
+        const speech = event.results[0][0].transcript.toLowerCase();
+        document.getElementById('voiceStatus').textContent = `You said: "${speech}"`;
+
+        if (speech.includes('complaint')) handleOption('complaint');
+        else if (speech.includes('scheme')) handleOption('scheme');
+        else if (speech.includes('track')) handleOption('track');
+        else speak("Sorry, I didn't understand. Please say complaint, scheme, or track.");
+      };
+
+      recognition.onerror = (event) => {
+        document.getElementById('voiceStatus').textContent = 'Voice error: ' + event.error;
+        speak("I couldn't hear you. Please try again.");
+      };
+
+      recognition.start();
+    }
+
+    // Speak intro on load
+    window.onload = () => {
+      speak("Hello! I am your AI assistant. Please say or select one of the options: File a complaint, Check for schemes, or Track your application.");
+      setTimeout(startListening, 4000); // delay to avoid overlap
+    };
+  </script>
+</body>
+</html>
